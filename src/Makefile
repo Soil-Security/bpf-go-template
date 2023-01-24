@@ -29,7 +29,7 @@ all: bootstrap
 
 .PHONY: clean
 clean:
-	$(Q)rm -rf $(OUTPUT) bootstrap
+	$(Q)rm -rf $(OUTPUT) bootstrap.bpf.o bootstrap
 
 $(OUTPUT) $(OUTPUT)/libbpf $(BPFTOOL_OUTPUT):
 	$(Q)mkdir -p $@

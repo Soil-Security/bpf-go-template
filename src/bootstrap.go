@@ -8,6 +8,8 @@ import (
 	"io"
 	"os"
 	"os/signal"
+	"path"
+	"path/filepath"
 	"syscall"
 
 	"github.com/cilium/ebpf"
@@ -26,7 +28,13 @@ func main() {
 func run(ctx context.Context) error {
 	var bpfObjects bpfObjects
 
-	spec, err := ebpf.LoadCollectionSpec("bootstrap.bpf.o")
+	executable, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	bpfObjectFile := path.Join(filepath.Dir(executable), "bootstrap.bpf.o")
+
+	spec, err := ebpf.LoadCollectionSpec(bpfObjectFile)
 	if err != nil {
 		return err
 	}
