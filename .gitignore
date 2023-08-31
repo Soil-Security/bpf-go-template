@@ -1,0 +1,8 @@
+.idea/
+
+.output/
+
+bootstrap
+bootstrap.bpf.o
+bootstrap.tar.gz
+checksums.txt
