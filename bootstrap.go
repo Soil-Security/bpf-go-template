@@ -12,10 +12,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	bpfencoding "github.com/Soil-Security/bpf/encoding"
 	"github.com/cilium/ebpf"
 	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/ringbuf"
-	bpfevents "github.com/danielpacak/bpf-events"
 )
 
 //go:embed bootstrap.bpf.o
@@ -36,7 +36,7 @@ func run(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	decoder := &bpfevents.Decoder{ByteOrder: spec.ByteOrder}
+	decoder := &bpfencoding.Decoder{ByteOrder: spec.ByteOrder}
 
 	err = spec.LoadAndAssign(&bpfObjects, &ebpf.CollectionOptions{})
 	if err != nil {
@@ -165,7 +165,7 @@ func bpfClose(closers ...io.Closer) error {
 	return nil
 }
 
-func parseAndPrintEvent(buf []byte, decoder *bpfevents.Decoder) error {
+func parseAndPrintEvent(buf []byte, decoder *bpfencoding.Decoder) error {
 	e := event{}
 	err := e.unpack(buf, decoder)
 	if err != nil {
@@ -188,7 +188,7 @@ type event struct {
 	FileName   string
 }
 
-func (e *event) unpack(buf []byte, decoder *bpfevents.Decoder) error {
+func (e *event) unpack(buf []byte, decoder *bpfencoding.Decoder) error {
 	var off = 0
 	var err error
 

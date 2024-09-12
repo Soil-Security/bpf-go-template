@@ -1,10 +1,10 @@
-module github.com/danielpacak/bpf-go-template
+module github.com/Soil-Security/bpf-go-template
 
 go 1.23
 
 require (
+	github.com/Soil-Security/bpf v0.0.0-20240912084151-9cc9810e8a33
 	github.com/cilium/ebpf v0.16.0
-	github.com/danielpacak/bpf-events v0.0.0-20230831174047-e175a794f6bd
 )
 
 require (
