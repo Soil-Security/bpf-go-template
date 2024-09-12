@@ -30,30 +30,30 @@ all: bootstrap
 
 .PHONY: clean
 clean:
-	$(Q)rm -rf $(OUTPUT) bootstrap.bpf.o bootstrap bootstrap.tar.gz checksums.txt
+	rm -rf $(OUTPUT) bootstrap.bpf.o bootstrap bootstrap.tar.gz checksums.txt
 
 $(OUTPUT) $(OUTPUT)/libbpf $(BPFTOOL_OUTPUT):
-	$(Q)mkdir -p $@
+	mkdir -p $@
 
 # Build libbpf
 $(LIBBPF_OBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)/libbpf
-	$(Q)$(MAKE) -C $(LIBBPF_SRC) BUILD_STATIC_ONLY=1 \
+	$(MAKE) -C $(LIBBPF_SRC) BUILD_STATIC_ONLY=1 \
 		OBJDIR=$(dir $@)/libbpf DESTDIR=$(dir $@)    \
 		INCLUDEDIR= LIBDIR= UAPIDIR=                 \
 		install
 
 # Build bpftool
 $(BPFTOOL): | $(BPFTOOL_OUTPUT)
-	$(Q)$(MAKE) ARCH= CROSS_COMPILE= OUTPUT=$(BPFTOOL_OUTPUT)/ -C $(BPFTOOL_SRC) bootstrap
+	$(MAKE) ARCH= CROSS_COMPILE= OUTPUT=$(BPFTOOL_OUTPUT)/ -C $(BPFTOOL_SRC) bootstrap
 
 # Build BPF code
 bootstrap.bpf.o: bootstrap.bpf.c $(LIBBPF_OBJ) | $(OUTPUT)
-	$(Q)$(CLANG) -g -O2 -target bpf -D__TARGET_ARCH_$(ARCH) $(INCLUDES) $(CLANG_BPF_SYS_INCLUDES) -c bootstrap.bpf.c -o $@
-	$(Q)$(LLVM_STRIP) -g $@
+	$(CLANG) -g -O2 -target bpf -D__TARGET_ARCH_$(ARCH) $(INCLUDES) $(CLANG_BPF_SYS_INCLUDES) -c bootstrap.bpf.c -o $@
+	$(LLVM_STRIP) -g $@
 
 # Build application binary
-bootstrap: bootstrap.bpf.o bootstrap.go
-	$(Q)$(GO) build -o $@ bootstrap.go
+bootstrap: bootstrap.bpf.o main.go
+	$(GO) build -o $@ main.go
 
 bootstrap.tar.gz: bootstrap README.md
 	$(TAR) czf bootstrap.tar.gz bootstrap README.md
@@ -63,11 +63,11 @@ checksums.txt: bootstrap.tar.gz
 
 .PHONY: $(VMLINUX)
 $(VMLINUX): $(BPFTOOL)
-	$(Q)$(BPFTOOL) btf dump file $(BTFFILE) format c > $(VMLINUX)
+	$(BPFTOOL) btf dump file $(BTFFILE) format c > $(VMLINUX)
 
 .PHONY: format
 format:
-	$(Q)$(CLANG_FORMAT) --verbose -i \
+	$(CLANG_FORMAT) --verbose -i \
 	bootstrap.bpf.c \
 	bootstrap.h
 
